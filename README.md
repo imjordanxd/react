@@ -18,6 +18,12 @@ The `rules-of-hooks` rule only recognized components as `Identifier` nodes with 
 
 The patch extends `isComponentName` to also recognize `MemberExpression` nodes with a PascalCase property name.
 
+#### Recognize components inside custom HOC wrappers
+
+The `rules-of-hooks` rule only recognized `React.forwardRef` and `React.memo` as valid HOC wrappers. Functions passed to custom HOCs (e.g. `const Component = withBar(() => { useHook() })`) were treated as callbacks where hooks are not allowed.
+
+The patch extends `getFunctionName` to resolve the name of a function passed as an argument to a call expression by looking at the outer assignment. This works for single HOCs, chained HOCs (`withFoo(withBar(() => {}))`), and object property assignments (`obj.Component = withBar(() => {})`). The resolved name must be PascalCase (component) or `use`-prefixed (hook) to be treated as valid.
+
 ---
 
 # [React](https://react.dev/) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/facebook/react/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react) [![(Runtime) Build and Test](https://github.com/facebook/react/actions/workflows/runtime_build_and_test.yml/badge.svg)](https://github.com/facebook/react/actions/workflows/runtime_build_and_test.yml) [![(Compiler) TypeScript](https://github.com/facebook/react/actions/workflows/compiler_typescript.yml/badge.svg?branch=main)](https://github.com/facebook/react/actions/workflows/compiler_typescript.yml) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://legacy.reactjs.org/docs/how-to-contribute.html#your-first-pull-request)

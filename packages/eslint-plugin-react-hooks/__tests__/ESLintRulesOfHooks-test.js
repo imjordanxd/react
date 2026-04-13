@@ -288,6 +288,56 @@ const allTests = {
     },
     {
       code: normalizeIndent`
+        // Valid because hooks can be used in anonymous arrow-function arguments
+        // to a custom HOC assigned to a PascalCase variable.
+        const Component = withBar((props) => {
+          useHook();
+          return <button {...props} />
+        });
+      `,
+    },
+    {
+      code: normalizeIndent`
+        // Valid because hooks can be used in anonymous function arguments
+        // to a custom HOC assigned to a PascalCase variable.
+        const Component = withBar(function (props) {
+          useHook();
+          return <button {...props} />
+        });
+      `,
+    },
+    {
+      code: normalizeIndent`
+        // Valid because hooks can be used in anonymous arrow-function arguments
+        // to a custom HOC assigned to an object property.
+        obj.Component = withBar((props) => {
+          useHook();
+          return <button {...props} />
+        });
+      `,
+    },
+    {
+      code: normalizeIndent`
+        // Valid because hooks can be used in chained HOC wrappers
+        // assigned to a PascalCase variable.
+        const Component = withFoo(withBar((props) => {
+          useHook();
+          return <button {...props} />
+        }));
+      `,
+    },
+    {
+      code: normalizeIndent`
+        // Valid because hooks can be used in chained HOC wrappers
+        // assigned to an object property.
+        obj.Component = withFoo(withBar((props) => {
+          useHook();
+          return <button {...props} />
+        }));
+      `,
+    },
+    {
+      code: normalizeIndent`
         // Valid because classes can call functions.
         // We don't consider these to be hooks.
         class C {
@@ -1530,6 +1580,45 @@ const allTests = {
           }
           return <button>{props.children}</button>;
         });
+      `,
+      errors: [conditionalError('useCustomHook')],
+    },
+    {
+      code: normalizeIndent`
+        // Invalid because hooks inside a custom HOC wrapper must not be
+        // called conditionally.
+        const Component = withBar((props) => {
+          if (props.fancy) {
+            useCustomHook();
+          }
+          return <button>{props.children}</button>;
+        });
+      `,
+      errors: [conditionalError('useCustomHook')],
+    },
+    {
+      code: normalizeIndent`
+        // Invalid because hooks inside a custom HOC wrapper assigned to
+        // an object property must not be called conditionally.
+        obj.Component = withBar((props) => {
+          if (props.fancy) {
+            useCustomHook();
+          }
+          return <button>{props.children}</button>;
+        });
+      `,
+      errors: [conditionalError('useCustomHook')],
+    },
+    {
+      code: normalizeIndent`
+        // Invalid because hooks inside chained HOC wrappers must not be
+        // called conditionally.
+        const Component = withFoo(withBar((props) => {
+          if (props.fancy) {
+            useCustomHook();
+          }
+          return <button>{props.children}</button>;
+        }));
       `,
       errors: [conditionalError('useCustomHook')],
     },

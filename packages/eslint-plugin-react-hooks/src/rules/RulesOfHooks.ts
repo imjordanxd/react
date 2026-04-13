@@ -894,7 +894,10 @@ function getFunctionName(node: Node) {
     return node.id;
   } else if (
     node.type === 'FunctionExpression' ||
-    node.type === 'ArrowFunctionExpression'
+    node.type === 'ArrowFunctionExpression' ||
+    // Canva: treat CallExpression the same so that HOC wrappers like
+    // const Component = withBar(() => {}) can resolve via recursion
+    node.type === 'CallExpression'
   ) {
     if (
       node.parent?.type === 'VariableDeclarator' &&
@@ -936,6 +939,17 @@ function getFunctionName(node: Node) {
       // Kinda clowny, but we'd said we'd follow spec convention for
       // `IsAnonymousFunctionDefinition()` usage.
       return node.parent.left;
+    } else if (
+      // Canva: resolve the name of a function passed as an argument to a
+      // custom HOC wrapper, e.g. const Component = withBar(() => {})
+      node.parent?.type === 'CallExpression' &&
+      node.parent.arguments.includes(node)
+    ) {
+      const wrappedName = getFunctionName(node.parent);
+      if (wrappedName && (isComponentName(wrappedName) || isHook(wrappedName))) {
+        return wrappedName;
+      }
+      return undefined;
     } else {
       return undefined;
     }
