@@ -12,6 +12,12 @@ The `rules-of-hooks` ESLint rule treats any `Namespace.useX()` member expression
 
 The patch skips the hook check for member expressions where the object is imported from a module path ending in `.messages`.
 
+#### Recognize components assigned to object properties
+
+The `rules-of-hooks` rule only recognized components as `Identifier` nodes with PascalCase names. This meant hooks inside components assigned to object properties (e.g. `obj.Component = () => { useHook() }`) were not treated as valid component contexts.
+
+The patch extends `isComponentName` to also recognize `MemberExpression` nodes with a PascalCase property name.
+
 ---
 
 # [React](https://react.dev/) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/facebook/react/blob/main/LICENSE) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react) [![(Runtime) Build and Test](https://github.com/facebook/react/actions/workflows/runtime_build_and_test.yml/badge.svg)](https://github.com/facebook/react/actions/workflows/runtime_build_and_test.yml) [![(Compiler) TypeScript](https://github.com/facebook/react/actions/workflows/compiler_typescript.yml/badge.svg?branch=main)](https://github.com/facebook/react/actions/workflows/compiler_typescript.yml) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://legacy.reactjs.org/docs/how-to-contribute.html#your-first-pull-request)

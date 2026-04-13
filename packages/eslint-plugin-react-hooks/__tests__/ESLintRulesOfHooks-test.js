@@ -97,6 +97,24 @@ const allTests = {
     },
     {
       code: normalizeIndent`
+        // Valid because components assigned to object properties can use hooks.
+        obj.Component = () => {
+          useHook();
+        };
+      `,
+    },
+    {
+      code: normalizeIndent`
+        // Valid because components defined as object properties can use hooks.
+        const obj = {
+          Component: () => {
+            useHook();
+          },
+        };
+      `,
+    },
+    {
+      code: normalizeIndent`
         // Valid because hooks can use hooks.
         function useHookWithHook() {
           useHook();
@@ -1020,6 +1038,32 @@ const allTests = {
         }
       `,
       errors: [conditionalError('Namespace.useConditionalHook')],
+    },
+    {
+      code: normalizeIndent`
+        // Invalid because hooks in components assigned to object properties
+        // must not be called conditionally.
+        obj.Component = () => {
+          if (cond) {
+            useConditionalHook();
+          }
+        };
+      `,
+      errors: [conditionalError('useConditionalHook')],
+    },
+    {
+      code: normalizeIndent`
+        // Invalid because hooks in components defined as object properties
+        // must not be called conditionally.
+        const obj = {
+          Component: () => {
+            if (cond) {
+              useConditionalHook();
+            }
+          },
+        };
+      `,
+      errors: [conditionalError('useConditionalHook')],
     },
     {
       code: normalizeIndent`
