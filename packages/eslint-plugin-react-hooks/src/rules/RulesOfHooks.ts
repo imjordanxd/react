@@ -754,6 +754,16 @@ const rule = {
       // But that gets complicated and enters type-system territory, so we're
       // only being strict about hook calls for now.
       CallExpression(node) {
+        // Canva: support messages prefixed with `use`
+        const callee = node.callee;
+        if (isMemberExpression(callee) && isIdentifier(callee.object)) {
+          const definition = getVariable(callee.object, getScope(node))?.defs?.at(0);
+
+          if (isImportBinding(definition) && isImportDeclaration(definition.parent) && definition.parent.source.value.endsWith('.messages')) {
+            return;
+          }
+        }
+
         if (isHook(node.callee)) {
           // Add the hook node to a map keyed by the code path segment. We will
           // do full code path analysis at the end of our code path.
@@ -929,6 +939,26 @@ function getFunctionName(node: Node) {
  */
 function last<T>(array: Array<T>): T {
   return array[array.length - 1] as T;
+}
+
+// Canva: utility functions
+function getVariable(identifier, scope) {
+  if (scope === null) {
+    return null;
+  }
+  const variable = scope.set.get(identifier.name);
+  return variable ?? getVariable(identifier, scope.upper);
+}
+
+const isImportBinding = isNodeOfType('ImportBinding');
+const isImportDeclaration = isNodeOfType('ImportDeclaration');
+const isMemberExpression = isNodeOfType('MemberExpression');
+const isIdentifier = isNodeOfType('Identifier');
+
+function isNodeOfType(type) {
+  return function (node) {
+    return node?.type === type;
+  }
 }
 
 export default rule;

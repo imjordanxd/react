@@ -66,6 +66,27 @@ const allTests = {
     },
     {
       code: normalizeIndent`
+        // Valid because \`useBar\` comes from a *.messages.ts file
+        import {Messages} from './bar.messages'
+        function Foo() {
+          if (true) {
+            Messages.useBar();
+          }
+        }
+      `,
+    },
+    {
+      code: normalizeIndent`
+        // Valid because components can use hooks.
+        function createComponentWithHookAndHoc() {
+          return withMagicBehaviour(function ComponentWithHook() {
+            useHook();
+          });
+        }
+      `,
+    },
+    {
+      code: normalizeIndent`
         // Valid because components can use hooks.
         function createComponentWithHook() {
           return function ComponentWithHook() {
@@ -615,7 +636,7 @@ const allTests = {
             onClick();
           });
           useServerEffect(() => {
-            onClick();  
+            onClick();
           });
         }
       `,
@@ -845,7 +866,7 @@ const allTests = {
     },
     {
       code: normalizeIndent`
-        // Valid because functions created with useEffectEvent can be passed by reference in useLayoutEffect 
+        // Valid because functions created with useEffectEvent can be passed by reference in useLayoutEffect
         // and useInsertionEffect.
         function MyComponent({ theme }) {
           const onClick = useEffectEvent(() => {
