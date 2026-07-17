@@ -18,7 +18,6 @@ export const {
   alwaysThrottleRetries,
   disableLegacyContextForFunctionComponents,
   disableSchedulerTimeoutInWorkLoop,
-  enableEffectEventMutationPhase,
   enableInfiniteRenderLoopDetection,
   enableInfiniteRenderLoopDetectionForceThrow,
   enableNoCloningMemoCache,
@@ -36,6 +35,7 @@ export const {
   enableFragmentRefsTextNodes,
   enableInternalInstanceMap,
   enableParallelTransitions,
+  enableViewTransitionParentEnterExit,
 } = dynamicFeatureFlags;
 
 // On WWW, __EXPERIMENTAL__ is used for a new modern build.
@@ -79,6 +79,8 @@ export const enableTaint: boolean = false;
 export const disableCommentsAsDOMContainers: boolean = false;
 
 export const enableCreateEventHandleAPI: boolean = true;
+
+export const enableEffectEventMutationPhase: boolean = true;
 
 export const enableScopeAPI: boolean = true;
 
